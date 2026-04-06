@@ -50,11 +50,11 @@ function renderList(lorebooks) {
     }
 
     lorebooks.forEach((name) => {
-        const id = `lore-cb-${CSS.escape(name)}`;
+        const safeId = `lore-cb-${name.replace(/[^a-zA-Z0-9]/g, "_")}`;
         const $item = $(`
             <div class="lore-manager-item">
-                <input type="checkbox" id="${id}" data-name="${name}" />
-                <label for="${id}">${name}</label>
+                <input type="checkbox" id="${safeId}" data-name="${name}" />
+                <label for="${safeId}">${name}</label>
             </div>
         `);
         $item.find("input").on("change", updateCount);
@@ -85,11 +85,7 @@ async function deleteSelected() {
         names.push($(this).data("name"));
     });
 
-    const confirmed = await new Promise((resolve) => {
-        const message = `Удалить ${names.length} лорбук(ов)?\n\n${names.join("\n")}`;
-        resolve(confirm(message));
-    });
-
+    const confirmed = confirm(`Удалить ${names.length} лорбук(ов)?\n\n${names.join("\n")}`);
     if (!confirmed) return;
 
     let successCount = 0;
@@ -111,12 +107,41 @@ async function deleteSelected() {
     await refreshList();
 }
 
-// Инициализация
+// Инициализация — HTML встроен прямо в JS, никаких внешних файлов
 jQuery(async () => {
     console.log(`[${extensionName}] Loading...`);
     try {
-        const settingsHtml = await $.get(`${extensionFolderPath}/settings.html`);
-        $("#extensions_settings2").append(settingsHtml);
+        const html = `
+        <div class="lore-manager-settings">
+            <div class="inline-drawer">
+                <div class="inline-drawer-toggle inline-drawer-header">
+                    <b>📚 Lore Book Manager</b>
+                    <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+                </div>
+                <div class="inline-drawer-content">
+                    <div class="lore-manager-toolbar">
+                        <button id="lore-manager-refresh" class="menu_button">
+                            <i class="fa-solid fa-rotate-right"></i> Обновить
+                        </button>
+                        <button id="lore-manager-select-all" class="menu_button">
+                            <i class="fa-solid fa-check-double"></i> Выбрать все
+                        </button>
+                        <button id="lore-manager-deselect-all" class="menu_button">
+                            <i class="fa-solid fa-xmark"></i> Снять все
+                        </button>
+                        <button id="lore-manager-delete" class="menu_button" style="background:var(--SmartThemeRedColor,#c0392b)">
+                            <i class="fa-solid fa-trash"></i> Удалить выбранные
+                        </button>
+                    </div>
+                    <div class="lore-manager-count" id="lore-manager-count">Лорбуков: 0 | Выбрано: 0</div>
+                    <div class="lore-manager-list" id="lore-manager-list">
+                        <div class="lore-manager-empty">Нажмите «Обновить» для загрузки списка</div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        $("#extensions_settings2").append(html);
 
         $("#lore-manager-refresh").on("click", refreshList);
         $("#lore-manager-select-all").on("click", () => {
