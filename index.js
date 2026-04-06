@@ -12,7 +12,12 @@ async function fetchAllLorebooks() {
         });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        return Array.isArray(data) ? data : [];
+        console.log(`[${extensionName}] API response:`, data);
+        // API может вернуть массив строк, массив объектов, или объект с полем files/entries
+        if (Array.isArray(data)) return data;
+        if (data && Array.isArray(data.files)) return data.files;
+        if (data && Array.isArray(data.entries)) return data.entries;
+        return [];
     } catch (err) {
         console.error(`[${extensionName}] Ошибка загрузки лорбуков:`, err);
         toastr.error("Не удалось загрузить список лорбуков", "Lore Book Manager");
@@ -49,7 +54,9 @@ function renderList(lorebooks) {
         return;
     }
 
-    lorebooks.forEach((name) => {
+    lorebooks.forEach((entry) => {
+        // API может вернуть строку или объект {name: "..."}
+        const name = typeof entry === "string" ? entry : (entry.name || entry.uid || JSON.stringify(entry));
         const safeId = `lore-cb-${name.replace(/[^a-zA-Z0-9]/g, "_")}`;
         const $item = $(`
             <div class="lore-manager-item">
