@@ -1,5 +1,19 @@
-.lore-manager-settings {
-    padding: 5px 0;
+.lore-manager-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.lore-manager-toolbar button {
+    flex: 1;
+    min-width: 80px;
+}
+
+.lore-manager-count {
+    font-size: 0.85em;
+    opacity: 0.7;
+    margin-bottom: 6px;
 }
 
 .lore-manager-list {
@@ -20,8 +34,6 @@
     gap: 8px;
     padding: 4px 6px;
     border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.15s;
 }
 
 .lore-manager-item:hover {
@@ -32,19 +44,10 @@
     cursor: pointer;
     flex: 1;
     margin: 0;
-    font-size: 0.95em;
 }
 
-.lore-manager-toolbar {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-bottom: 8px;
-}
-
-.lore-manager-toolbar button {
-    flex: 1;
-    min-width: 80px;
+.lore-manager-item input[type=checkbox] {
+    cursor: pointer;
 }
 
 .lore-manager-empty {
@@ -52,14 +55,4 @@
     padding: 10px;
     opacity: 0.6;
     font-style: italic;
-}
-
-.lore-manager-count {
-    font-size: 0.85em;
-    opacity: 0.7;
-    margin-bottom: 6px;
-}
-
-#lore-manager-delete {
-    background: var(--SmartThemeRedColor, #c0392b) !important;
 }
